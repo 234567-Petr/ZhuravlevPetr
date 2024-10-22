@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+int main() {
+    char path[] = "/path/to/your/file.txt";
+    struct stat file_stat;
+
+    // Проверяем, существует ли файл
+    if (stat(path, &file_stat) == -1) {
+        perror("stat failed");
+        return 1;
+    }
+
+    // Проверяем права доступа
+    if (S_ISREG(file_stat.st_mode)) {
+        // Файл существует и является обычным файлом
+        if (file_stat.st_mode & S_IRUSR) {
+            printf("Файл доступен для чтения текущим пользователем.\n");
+        }
+        if (file_stat.st_mode & S_IWUSR) {
+            printf("Файл доступен для записи текущим пользователем.\n");
+        }
+    } else if (S_ISDIR(file_stat.st_mode)) {
+        // Каталог
+        if (file_stat.st_mode & S_IRUSR) {
+            printf("Каталог доступен для чтения текущим пользователем.\n");
+        }
+        if (file_stat.st_mode & S_IWUSR) {
+            printf("Каталог доступен для записи текущим пользователем.\n");
+        }
+    } else {
+        printf("Не удалось определить тип файла.\n");
+    }
+
+    return 0;
+}
